@@ -1,0 +1,37 @@
+export type Sex = 'male' | 'female';
+
+export interface UserInput {
+  age: number;
+  sex: Sex;
+  height: number; // in cm
+  currentWeight: number; // in kg
+  desiredWeight: number; // in kg
+  timeToWeight?: number; // in weeks
+}
+
+export interface BMIResult {
+  value: number;
+  category: string;
+  color: 'info' | 'positive' | 'yellow' | 'negative';
+}
+
+export interface FastingPlan {
+  name: string;
+  description: string;
+  schedule: string;
+  icon: string;
+}
+
+export interface WeightLossPlan {
+  currentBMI: BMIResult;
+  targetBMI: BMIResult;
+  idealWeight: number;
+  weeksToGoal: number;
+  targetDate: Date;
+  dailyCalories: number;
+  dailyDeficit: number;
+  fastingPlan: FastingPlan;
+  bmr: number;
+  tdee: number;
+}
+
