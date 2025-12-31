@@ -1,170 +1,327 @@
 import React from 'react';
-import {
-  View,
-  Heading,
-  Text,
-  Flex,
-  Well,
-  Divider,
-  Badge
-} from '@adobe/react-spectrum';
+import { View } from '@adobe/react-spectrum';
 import { WeightLossPlan } from '../types';
 
 interface ResultsDisplayProps {
   plan: WeightLossPlan;
 }
 
+interface ResultCardProps {
+  icon: string;
+  title: string;
+  children: React.ReactNode;
+  gradient?: string;
+  delay?: number;
+}
+
+const ResultCard: React.FC<ResultCardProps> = ({ icon, title, children, gradient, delay = 0 }) => (
+  <div
+    className="fade-in-up hover-lift"
+    style={{
+      background: gradient || 'rgba(255, 255, 255, 0.95)',
+      borderRadius: '24px',
+      padding: 'clamp(1.5rem, 4vw, 2.5rem)',
+      boxShadow: '0 20px 60px rgba(0, 0, 0, 0.15)',
+      animationDelay: `${delay}s`,
+      height: '100%',
+    }}
+  >
+    <div style={{ textAlign: 'center' }}>
+      <span style={{
+        fontSize: 'clamp(3rem, 8vw, 4rem)',
+        display: 'block',
+        marginBottom: '1rem',
+        filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.2))'
+      }}>
+        {icon}
+      </span>
+      <h3 style={{
+        color: gradient ? '#fff' : '#1a1a2e',
+        fontSize: 'clamp(1.1rem, 3vw, 1.3rem)',
+        fontWeight: 700,
+        marginBottom: '1rem',
+        textTransform: 'uppercase',
+        letterSpacing: '0.05em',
+      }}>
+        {title}
+      </h3>
+      {children}
+    </div>
+  </div>
+);
+
+const getBMIColor = (category: string): string => {
+  switch (category) {
+    case 'Underweight': return '#3b82f6';
+    case 'Normal weight': return '#10b981';
+    case 'Overweight': return '#f59e0b';
+    case 'Obese': return '#ef4444';
+    default: return '#6b7280';
+  }
+};
+
 /**
- * Results Display Component
+ * Results Display Component - Beautiful Redesign
  */
 export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ plan }) => {
   const formatDate = (date: Date): string => {
-    return date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
     });
   };
 
   return (
-    <View marginTop="size-400">
-      <Heading level={2} marginBottom="size-300">
-        📈 Your Personalized Plan
-      </Heading>
+    <View marginTop="size-600">
+      {/* Section Header */}
+      <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+        <span style={{ fontSize: '4rem', display: 'block', marginBottom: '1rem' }}>📈</span>
+        <h2 style={{
+          color: '#fff',
+          fontSize: 'clamp(2rem, 6vw, 3rem)',
+          fontWeight: 800,
+          margin: 0,
+        }}>
+          Your Personalized Plan
+        </h2>
+        <p style={{ color: 'rgba(255,255,255,0.7)', marginTop: '0.75rem', fontSize: '1.2rem' }}>
+          Here's everything you need to reach your goal
+        </p>
+      </div>
 
-      {/* BMI Cards */}
-      <Flex direction={{ base: 'column', M: 'row' }} gap="size-300" marginBottom="size-300">
-        <View
-          flex={1}
-          backgroundColor="gray-50"
-          padding="size-300"
-          borderRadius="medium"
-          UNSAFE_style={{
-            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-            border: '2px solid var(--spectrum-global-color-gray-300)'
-          }}
-        >
-          <Flex direction="column" alignItems="center" gap="size-100">
-            <Text UNSAFE_style={{ fontSize: '2rem' }}>📏</Text>
-            <Heading level={4}>Current BMI</Heading>
-            <Text UNSAFE_style={{ fontSize: '2rem', fontWeight: 'bold' }}>
-              {plan.currentBMI.value.toFixed(1)}
-            </Text>
-            <Badge variant={plan.currentBMI.color}>{plan.currentBMI.category}</Badge>
-          </Flex>
-        </View>
+      {/* BMI Cards Row */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+        gap: '1.5rem',
+        marginBottom: '1.5rem'
+      }}>
+        <ResultCard icon="📏" title="Current BMI" delay={0.1}>
+          <div className="big-number" style={{ marginBottom: '0.75rem' }}>
+            {plan.currentBMI.value.toFixed(1)}
+          </div>
+          <span style={{
+            display: 'inline-block',
+            padding: '0.5rem 1.25rem',
+            borderRadius: '50px',
+            background: getBMIColor(plan.currentBMI.category),
+            color: '#fff',
+            fontWeight: 700,
+            fontSize: '1rem',
+          }}>
+            {plan.currentBMI.category}
+          </span>
+        </ResultCard>
 
-        <View
-          flex={1}
-          backgroundColor="gray-50"
-          padding="size-300"
-          borderRadius="medium"
-          UNSAFE_style={{
-            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-            border: '2px solid var(--spectrum-global-color-gray-300)'
-          }}
-        >
-          <Flex direction="column" alignItems="center" gap="size-100">
-            <Text UNSAFE_style={{ fontSize: '2rem' }}>🎯</Text>
-            <Heading level={4}>Target BMI</Heading>
-            <Text UNSAFE_style={{ fontSize: '2rem', fontWeight: 'bold' }}>
-              {plan.targetBMI.value.toFixed(1)}
-            </Text>
-            <Badge variant={plan.targetBMI.color}>{plan.targetBMI.category}</Badge>
-          </Flex>
-        </View>
-      </Flex>
+        <ResultCard icon="🎯" title="Target BMI" delay={0.2}>
+          <div className="big-number" style={{ marginBottom: '0.75rem' }}>
+            {plan.targetBMI.value.toFixed(1)}
+          </div>
+          <span style={{
+            display: 'inline-block',
+            padding: '0.5rem 1.25rem',
+            borderRadius: '50px',
+            background: getBMIColor(plan.targetBMI.category),
+            color: '#fff',
+            fontWeight: 700,
+            fontSize: '1rem',
+          }}>
+            {plan.targetBMI.category}
+          </span>
+        </ResultCard>
 
-      {/* Ideal Weight */}
-      <Well marginBottom="size-300">
-        <Flex alignItems="center" gap="size-200">
-          <Text UNSAFE_style={{ fontSize: '1.5rem' }}>⚖️</Text>
-          <View>
-            <Heading level={4}>Medically Ideal Weight</Heading>
-            <Text UNSAFE_style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>
-              {plan.idealWeight.toFixed(1)} kg
-            </Text>
-          </View>
-        </Flex>
-      </Well>
+        <ResultCard icon="⚖️" title="Ideal Weight" delay={0.3}>
+          <div className="big-number" style={{ marginBottom: '0.5rem' }}>
+            {plan.idealWeight.toFixed(1)}
+          </div>
+          <span style={{ color: '#6b7280', fontSize: '1.2rem', fontWeight: 600 }}>
+            kilograms
+          </span>
+        </ResultCard>
+      </div>
 
-      {/* Timeline */}
-      <Well marginBottom="size-300">
-        <Flex alignItems="center" gap="size-200">
-          <Text UNSAFE_style={{ fontSize: '1.5rem' }}>📅</Text>
-          <View>
-            <Heading level={4}>Timeline to Goal</Heading>
-            <Text UNSAFE_style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>
-              {plan.weeksToGoal} weeks ({Math.ceil(plan.weeksToGoal / 4)} months)
-            </Text>
-            <Text>Target Date: {formatDate(plan.targetDate)}</Text>
-          </View>
-        </Flex>
-      </Well>
-
-      {/* Calorie Information */}
-      <View
-        backgroundColor="gray-50"
-        padding="size-400"
-        borderRadius="medium"
-        marginBottom="size-300"
-        UNSAFE_style={{
-          border: '2px solid var(--spectrum-global-color-blue-400)',
-          backgroundColor: '#e6f2ff'
+      {/* Timeline Card */}
+      <div
+        className="fade-in-up hover-lift"
+        style={{
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          borderRadius: '24px',
+          padding: 'clamp(2rem, 5vw, 3rem)',
+          marginBottom: '1.5rem',
+          boxShadow: '0 20px 60px rgba(102, 126, 234, 0.4)',
+          animationDelay: '0.4s',
         }}
       >
-        <Heading level={3} marginBottom="size-200">🔥 Daily Calorie Plan</Heading>
-        <Divider size="S" marginBottom="size-200" />
-        
-        <Flex direction="column" gap="size-150">
-          <Flex justifyContent="space-between">
-            <Text>Your BMR (Basal Metabolic Rate):</Text>
-            <Text UNSAFE_style={{ fontWeight: 'bold' }}>{plan.bmr} cal/day</Text>
-          </Flex>
-          <Flex justifyContent="space-between">
-            <Text>Your TDEE (Total Daily Energy):</Text>
-            <Text UNSAFE_style={{ fontWeight: 'bold' }}>{plan.tdee} cal/day</Text>
-          </Flex>
-          <Flex justifyContent="space-between">
-            <Text>Required Daily Deficit:</Text>
-            <Text UNSAFE_style={{ fontWeight: 'bold', color: 'var(--spectrum-global-color-red-600)' }}>
-              -{plan.dailyDeficit} cal/day
-            </Text>
-          </Flex>
-          <Divider size="S" />
-          <Flex justifyContent="space-between">
-            <Text UNSAFE_style={{ fontSize: '1.1rem', fontWeight: 'bold' }}>
-              Target Daily Calories:
-            </Text>
-            <Text UNSAFE_style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--spectrum-global-color-green-600)' }}>
-              {plan.dailyCalories} cal
-            </Text>
-          </Flex>
-        </Flex>
-      </View>
+        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: '2rem' }}>
+          <span style={{ fontSize: 'clamp(4rem, 10vw, 6rem)' }}>📅</span>
+          <div style={{ textAlign: 'center' }}>
+            <h3 style={{ color: 'rgba(255,255,255,0.9)', fontSize: '1.2rem', marginBottom: '0.5rem', fontWeight: 600 }}>
+              YOUR GOAL DATE
+            </h3>
+            <div style={{
+              fontSize: 'clamp(1.5rem, 4vw, 2.5rem)',
+              fontWeight: 800,
+              color: '#fff',
+              marginBottom: '0.5rem'
+            }}>
+              {formatDate(plan.targetDate)}
+            </div>
+            <div style={{
+              display: 'inline-block',
+              background: 'rgba(255,255,255,0.2)',
+              padding: '0.75rem 1.5rem',
+              borderRadius: '50px',
+              color: '#fff',
+              fontWeight: 700,
+              fontSize: '1.1rem',
+            }}>
+              {plan.weeksToGoal} weeks • {Math.ceil(plan.weeksToGoal / 4)} months
+            </div>
+          </div>
+        </div>
+      </div>
 
-      {/* Fasting Plan */}
-      <View
-        backgroundColor="gray-50"
-        padding="size-400"
-        borderRadius="medium"
-        UNSAFE_style={{
-          border: '2px solid var(--spectrum-global-color-purple-400)',
-          backgroundColor: '#f3e8ff'
+      {/* Calorie Plan Card */}
+      <div
+        className="fade-in-up hover-lift"
+        style={{
+          background: 'rgba(255, 255, 255, 0.95)',
+          borderRadius: '24px',
+          padding: 'clamp(2rem, 5vw, 3rem)',
+          marginBottom: '1.5rem',
+          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.15)',
+          animationDelay: '0.5s',
         }}
       >
-        <Heading level={3} marginBottom="size-200">
-          {plan.fastingPlan.icon} Recommended Fasting Plan
-        </Heading>
-        <Divider size="S" marginBottom="size-200" />
-        
-        <Heading level={4} marginBottom="size-100">{plan.fastingPlan.name}</Heading>
-        <Text>{plan.fastingPlan.description}</Text>
-        <Text marginTop="size-100" UNSAFE_style={{ fontWeight: 'bold' }}>
-          {plan.fastingPlan.schedule}
-        </Text>
-      </View>
+        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+          <span style={{ fontSize: '4rem', display: 'block', marginBottom: '1rem' }}>🔥</span>
+          <h3 style={{ color: '#1a1a2e', fontSize: '1.5rem', fontWeight: 800, margin: 0 }}>
+            DAILY CALORIE PLAN
+          </h3>
+        </div>
+
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          gap: '1.5rem',
+          marginBottom: '2rem'
+        }}>
+          <div style={{ textAlign: 'center', padding: '1.5rem', background: '#f8fafc', borderRadius: '16px' }}>
+            <div style={{ color: '#6b7280', fontSize: '0.9rem', fontWeight: 600, marginBottom: '0.5rem' }}>
+              BMR (Basal Rate)
+            </div>
+            <div style={{ color: '#1a1a2e', fontSize: '2rem', fontWeight: 800 }}>
+              {plan.bmr}
+            </div>
+            <div style={{ color: '#6b7280', fontSize: '0.9rem' }}>cal/day</div>
+          </div>
+
+          <div style={{ textAlign: 'center', padding: '1.5rem', background: '#f8fafc', borderRadius: '16px' }}>
+            <div style={{ color: '#6b7280', fontSize: '0.9rem', fontWeight: 600, marginBottom: '0.5rem' }}>
+              TDEE (Total Energy)
+            </div>
+            <div style={{ color: '#1a1a2e', fontSize: '2rem', fontWeight: 800 }}>
+              {plan.tdee}
+            </div>
+            <div style={{ color: '#6b7280', fontSize: '0.9rem' }}>cal/day</div>
+          </div>
+
+          <div style={{ textAlign: 'center', padding: '1.5rem', background: '#fef2f2', borderRadius: '16px' }}>
+            <div style={{ color: '#6b7280', fontSize: '0.9rem', fontWeight: 600, marginBottom: '0.5rem' }}>
+              Daily Deficit
+            </div>
+            <div style={{ color: '#ef4444', fontSize: '2rem', fontWeight: 800 }}>
+              -{plan.dailyDeficit}
+            </div>
+            <div style={{ color: '#6b7280', fontSize: '0.9rem' }}>cal/day</div>
+          </div>
+        </div>
+
+        {/* Target Calories - Big Display */}
+        <div style={{
+          background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+          borderRadius: '20px',
+          padding: '2rem',
+          textAlign: 'center',
+        }}>
+          <div style={{ color: 'rgba(255,255,255,0.9)', fontSize: '1.1rem', fontWeight: 600, marginBottom: '0.5rem' }}>
+            🎯 YOUR DAILY TARGET
+          </div>
+          <div style={{ color: '#fff', fontSize: 'clamp(3rem, 10vw, 5rem)', fontWeight: 900, lineHeight: 1 }}>
+            {plan.dailyCalories}
+          </div>
+          <div style={{ color: 'rgba(255,255,255,0.9)', fontSize: '1.3rem', fontWeight: 600 }}>
+            calories per day
+          </div>
+        </div>
+      </div>
+
+      {/* Fasting Plan Card */}
+      <div
+        className="fade-in-up hover-lift"
+        style={{
+          background: 'linear-gradient(135deg, #a855f7 0%, #7c3aed 100%)',
+          borderRadius: '24px',
+          padding: 'clamp(2rem, 5vw, 3rem)',
+          boxShadow: '0 20px 60px rgba(168, 85, 247, 0.4)',
+          animationDelay: '0.6s',
+        }}
+      >
+        <div style={{ textAlign: 'center' }}>
+          <span style={{
+            fontSize: 'clamp(5rem, 15vw, 8rem)',
+            display: 'block',
+            marginBottom: '1.5rem',
+            filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.3))'
+          }}>
+            {plan.fastingPlan.icon}
+          </span>
+
+          <h3 style={{
+            color: 'rgba(255,255,255,0.9)',
+            fontSize: '1.1rem',
+            fontWeight: 600,
+            marginBottom: '0.5rem',
+            textTransform: 'uppercase',
+            letterSpacing: '0.1em'
+          }}>
+            Recommended Fasting Plan
+          </h3>
+
+          <div style={{
+            fontSize: 'clamp(2rem, 6vw, 3rem)',
+            fontWeight: 900,
+            color: '#fff',
+            marginBottom: '1rem'
+          }}>
+            {plan.fastingPlan.name}
+          </div>
+
+          <p style={{
+            color: 'rgba(255,255,255,0.9)',
+            fontSize: '1.2rem',
+            marginBottom: '1.5rem',
+            maxWidth: '500px',
+            margin: '0 auto 1.5rem'
+          }}>
+            {plan.fastingPlan.description}
+          </p>
+
+          <div style={{
+            display: 'inline-block',
+            background: 'rgba(255,255,255,0.2)',
+            padding: '1rem 2rem',
+            borderRadius: '50px',
+            color: '#fff',
+            fontWeight: 700,
+            fontSize: '1.2rem',
+          }}>
+            ⏰ {plan.fastingPlan.schedule}
+          </div>
+        </div>
+      </div>
     </View>
   );
 };
-
