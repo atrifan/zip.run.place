@@ -7,12 +7,12 @@ interface WeightFormProps {
 }
 
 interface WeightFormState {
-  age: number;
+  age: string;
   sex: Sex;
-  height: number;
-  currentWeight: number;
-  desiredWeight: number;
-  timeToWeight: number | undefined;
+  height: string;
+  currentWeight: string;
+  desiredWeight: string;
+  timeToWeight: string;
   useCustomTime: boolean;
 }
 
@@ -72,12 +72,12 @@ export class WeightForm extends Component<WeightFormProps, WeightFormState> {
   constructor(props: WeightFormProps) {
     super(props);
     this.state = {
-      age: 30,
+      age: '30',
       sex: 'male',
-      height: 175,
-      currentWeight: 80,
-      desiredWeight: 70,
-      timeToWeight: undefined,
+      height: '175',
+      currentWeight: '80',
+      desiredWeight: '70',
+      timeToWeight: '12',
       useCustomTime: false
     };
   }
@@ -86,13 +86,14 @@ export class WeightForm extends Component<WeightFormProps, WeightFormState> {
     e.preventDefault();
     const { age, sex, height, currentWeight, desiredWeight, timeToWeight, useCustomTime } = this.state;
 
+    // Convert strings to numbers for submission
     this.props.onSubmit({
-      age,
+      age: parseInt(age) || 0,
       sex,
-      height,
-      currentWeight,
-      desiredWeight,
-      timeToWeight: useCustomTime ? timeToWeight : undefined
+      height: parseInt(height) || 0,
+      currentWeight: parseInt(currentWeight) || 0,
+      desiredWeight: parseInt(desiredWeight) || 0,
+      timeToWeight: useCustomTime ? (parseInt(timeToWeight) || 12) : undefined
     });
   };
 
@@ -134,7 +135,7 @@ export class WeightForm extends Component<WeightFormProps, WeightFormState> {
               <input
                 type="number"
                 value={age}
-                onChange={(e) => this.setState({ age: parseInt(e.target.value) || 0 })}
+                onChange={(e) => this.setState({ age: e.target.value })}
                 min={10}
                 max={120}
                 required
@@ -161,7 +162,7 @@ export class WeightForm extends Component<WeightFormProps, WeightFormState> {
             <input
               type="number"
               value={height}
-              onChange={(e) => this.setState({ height: parseInt(e.target.value) || 0 })}
+              onChange={(e) => this.setState({ height: e.target.value })}
               min={100}
               max={250}
               required
@@ -176,7 +177,7 @@ export class WeightForm extends Component<WeightFormProps, WeightFormState> {
               <input
                 type="number"
                 value={currentWeight}
-                onChange={(e) => this.setState({ currentWeight: parseInt(e.target.value) || 0 })}
+                onChange={(e) => this.setState({ currentWeight: e.target.value })}
                 min={30}
                 max={300}
                 required
@@ -189,7 +190,7 @@ export class WeightForm extends Component<WeightFormProps, WeightFormState> {
               <input
                 type="number"
                 value={desiredWeight}
-                onChange={(e) => this.setState({ desiredWeight: parseInt(e.target.value) || 0 })}
+                onChange={(e) => this.setState({ desiredWeight: e.target.value })}
                 min={30}
                 max={300}
                 required
@@ -215,8 +216,8 @@ export class WeightForm extends Component<WeightFormProps, WeightFormState> {
             <FormField icon="⏳" label="Weeks to Goal">
               <input
                 type="number"
-                value={timeToWeight || 12}
-                onChange={(e) => this.setState({ timeToWeight: parseInt(e.target.value) || 12 })}
+                value={timeToWeight}
+                onChange={(e) => this.setState({ timeToWeight: e.target.value })}
                 min={1}
                 max={104}
                 required
